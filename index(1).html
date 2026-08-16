@@ -1,0 +1,832 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A Little Journey</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:wght@400;500&family=Parisienne&display=swap');
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;overflow:hidden}
+body{background:#0c0a0f;color:#f6eee4;font-family:"DM Sans",sans-serif}
+button{font:inherit}
+.screen{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:30px;text-align:center;opacity:0;pointer-events:none;transition:opacity .7s ease}
+.screen.active{display:flex;opacity:1;pointer-events:auto}
+.inner{width:min(100%,1050px)}
+.eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#d9bd87}
+h1,h2,h3{font-family:"Cormorant Garamond",serif;font-weight:500}
+h1{font-size:clamp(70px,11vw,150px);line-height:.8;margin:25px 0}
+h2{font-size:clamp(42px,6vw,76px);margin:15px 0}
+.script{font-family:Parisienne,cursive;color:#efc5cc}
+p{color:#b9afb2;line-height:1.7;max-width:650px;margin:0 auto}
+.cta{margin-top:30px;border:1px solid #84616c;background:#19131a;color:#f8eee7;border-radius:999px;padding:15px 30px;cursor:pointer;position:relative;z-index:20;transition:.25s}
+.cta:hover{background:#d99aa7;color:#24151b;transform:translateY(-2px)}
+.glow{position:absolute;width:55vw;height:55vw;border-radius:50%;background:#b66b7d;filter:blur(90px);opacity:.14;animation:pulse 6s infinite}
+@keyframes pulse{50%{transform:scale(1.18);opacity:.22}}
+.music{position:fixed;right:calc(22px + env(safe-area-inset-right));top:calc(20px + env(safe-area-inset-top));z-index:100;border:1px solid #493840;background:#171219;color:#ddd;border-radius:50%;width:44px;height:44px;cursor:pointer}
+.music.hidden{display:none}
+.boxes{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:35px}
+.box{height:190px;border:1px solid #4b3740;background:#171118;border-radius:18px;position:relative;cursor:pointer;overflow:hidden;transition:.3s}
+.box:hover{transform:translateY(-7px);border-color:#d99aa7}
+.box.lid-open .lid{transform:translateY(-45px) rotate(-5deg)}
+.lid{position:absolute;left:12%;right:12%;top:35%;height:20px;background:#a96475;transition:.45s;z-index:2}
+.body{position:absolute;left:15%;right:15%;top:44%;bottom:18%;background:#673746;border-radius:4px 4px 12px 12px}
+.ribbon{position:absolute;top:44%;bottom:18%;left:47%;width:7%;background:#d5ae73;z-index:3}
+.box span{position:absolute;bottom:9px;left:0;right:0;font-size:10px;letter-spacing:.12em;color:#d9ced0}
+.counter{font-size:12px;color:#81757a;margin-top:18px}
+.next{margin-top:24px;opacity:.35;pointer-events:none}
+.next.ready{opacity:1;pointer-events:auto}
+.card{margin:30px auto 0;padding:38px;max-width:760px;border:1px solid #3f3038;background:#151017;border-radius:25px}
+.question{font:500 34px "Cormorant Garamond";margin-bottom:22px}
+.answers{display:grid;gap:10px}
+.answer{border:1px solid #493840;background:#1b151d;color:#eee;text-align:left;border-radius:13px;padding:14px 17px;cursor:pointer}
+.answer:hover{border-color:#d99aa7}
+.answer.correct{border-color:#91aa92;background:#222d25}
+.answer.wrong{border-color:#a86b79;background:#302027}
+.feedback{height:26px;margin-top:15px;color:#efc5cc}
+.puzzle{width:min(90vw,360px);display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:28px auto}
+.tile{aspect-ratio:1;border-radius:9px;background:linear-gradient(135deg,#754250,#bd838d);display:flex;align-items:center;justify-content:center;font:500 28px "Cormorant Garamond";cursor:pointer}
+.tile.empty{background:#0e0b10;border:1px dashed #4b3d43}
+.letters{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:32px}
+.letter{width:145px;height:100px;border:1px solid #4b3740;background:#181219;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#dcd1d2}
+.letter.opened{border-color:#d9bd87}
+.final-heart{font-size:55px;animation:beat 1.5s infinite}
+@keyframes beat{50%{transform:scale(1.13)}}
+.proposal{font:500 clamp(48px,7vw,90px)/.95 "Cormorant Garamond";margin:22px 0}
+.name{font:60px Parisienne;color:#efc5cc}
+#celebrate{position:fixed;inset:0;background:#0c0a0ff5;z-index:200;display:none;align-items:center;justify-content:center;text-align:center}
+#celebrate.show{display:flex}
+
+/* ---------- MOBILE / SMALL SCREEN LAYOUT ---------- */
+@media (max-width: 800px){
+  html,body{width:100%;height:100%;height:100dvh;overflow:hidden}
+  .screen{
+    width:100%;
+    height:100dvh;
+    min-height:0;
+    padding:16px 14px;
+    overflow:hidden;
+  }
+  .inner{
+    width:100%;
+    max-width:100%;
+    max-height:calc(100dvh - 32px);
+    min-height:0;
+    overflow:hidden;
+  }
+
+  .eyebrow{
+    font-size:8px;
+    letter-spacing:.20em;
+    line-height:1.3;
+  }
+  h1{
+    font-size:clamp(58px,19vw,92px);
+    line-height:.78;
+    margin:12px 0 16px;
+  }
+  h2{
+    font-size:clamp(31px,9vw,48px);
+    line-height:.9;
+    margin:8px 0 10px;
+  }
+  .script{font-size:1em}
+  p{
+    font-size:11px;
+    line-height:1.45;
+    max-width:100%;
+  }
+
+  .cta{
+    max-width:100%;
+    margin-top:16px;
+    padding:11px 18px;
+    font-size:12px;
+    white-space:normal;
+    line-height:1.2;
+  }
+  .music{
+    right:12px;
+    top:10px;
+    width:38px;
+    height:38px;
+    font-size:16px;
+  }
+
+  /* Gifts */
+  .boxes{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+    margin-top:14px;
+  }
+  .box{
+    width:100%;
+    height:92px;
+    min-width:0;
+    border-radius:12px;
+  }
+  .box:last-child{grid-column:1 / -1}
+  .lid{top:34%;height:11px}
+  .body{top:43%;bottom:17%}
+  .ribbon{top:43%;bottom:17%}
+  .box span{
+    bottom:6px;
+    font-size:7px;
+    letter-spacing:.08em;
+    white-space:nowrap;
+  }
+  .counter{
+    font-size:9px;
+    margin-top:8px;
+  }
+  .next{margin-top:9px}
+
+  /* Quiz */
+  .card{
+    width:100%;
+    max-width:100%;
+    margin:14px auto 0;
+    padding:15px;
+    border-radius:16px;
+  }
+  .question{
+    font-size:24px;
+    line-height:1.05;
+    margin-bottom:13px;
+  }
+  .answers{gap:7px}
+  .answer{
+    border-radius:10px;
+    padding:10px 11px;
+    font-size:11px;
+    line-height:1.2;
+  }
+  .feedback{
+    height:20px;
+    margin-top:8px;
+    font-size:9px;
+  }
+
+  /* Heart game */
+  .heart-arena{
+    width:100%;
+    height:34dvh;
+    min-height:210px;
+    max-height:290px;
+    margin:14px auto 8px;
+    border-radius:20px;
+  }
+  .moving-heart{
+    width:50px;
+    height:50px;
+    font-size:42px;
+    line-height:50px;
+  }
+  .heart-hint{
+    bottom:10px;
+    font-size:8px;
+  }
+  .heart-count{
+    font-size:9px;
+    margin-top:5px;
+  }
+  .heart-game #heartMessage{
+    min-height:32px;
+    margin-top:4px;
+    font-size:22px;
+    line-height:1;
+  }
+
+  /* Letters */
+  .letters{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+    margin-top:14px;
+  }
+  .letter{
+    width:100%;
+    height:72px;
+    min-width:0;
+    padding:8px;
+    border-radius:10px;
+    font-size:10px;
+    line-height:1.15;
+  }
+
+  /* Final proposal: deliberately compact so it remains one fixed screen */
+  #final .inner{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    height:100%;
+    max-height:100%;
+  }
+  .final-heart{font-size:32px;line-height:1}
+  .name{
+    font-size:39px;
+    line-height:1;
+    margin:3px 0;
+  }
+  .proposal{
+    font-size:clamp(27px,7.8vw,38px);
+    line-height:.9;
+    margin:8px 0 10px;
+  }
+  #final p{
+    width:100%;
+    max-width:360px;
+    font-size:8.5px;
+    line-height:1.28;
+    margin:2px auto;
+  }
+  #final .cta{
+    margin-top:8px;
+    padding:9px 16px;
+    font-size:11px;
+  }
+
+  /* Modal */
+  #modal{
+    padding:14px;
+  }
+  #modal .card{
+    max-height:calc(100dvh - 28px);
+    overflow:hidden;
+    padding:18px 15px;
+    margin:0;
+  }
+  #modal h2{
+    font-size:31px;
+    margin:8px 0;
+  }
+  #modal p{
+    font-size:11px;
+    line-height:1.45;
+  }
+  #modal .cta{
+    margin-top:13px;
+  }
+
+  #celebrate{
+    padding:20px;
+  }
+  #celebrate h2{
+    font-size:40px;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 380px), (max-height: 650px){
+  .screen{padding:11px 10px}
+  .inner{max-height:calc(100dvh - 22px)}
+  h2{font-size:29px}
+  .boxes{gap:6px;margin-top:10px}
+  .box{height:78px}
+  .box span{font-size:6px}
+  .card{margin-top:10px;padding:12px}
+  .question{font-size:21px}
+  .answer{padding:8px 9px;font-size:10px}
+  .heart-arena{height:31dvh;min-height:185px}
+  .letters{margin-top:10px}
+  .letter{height:62px;font-size:9px}
+  #final p{font-size:7.5px;line-height:1.22}
+  .proposal{font-size:26px}
+}
+
+
+.heart-game .inner{position:relative}
+.heart-arena{
+  position:relative;width:min(90vw,760px);height:min(48vh,430px);min-height:300px;
+  margin:28px auto 15px;border:1px solid #49353e;border-radius:30px;overflow:hidden;
+  background:radial-gradient(circle at 50% 50%,rgba(190,111,128,.09),transparent 45%),linear-gradient(145deg,#191219,#100d12);
+  box-shadow:inset 0 0 70px rgba(217,154,167,.04)
+}
+.heart-arena:before,.heart-arena:after{content:"";position:absolute;border-radius:50%;background:#d99aa7;opacity:.12;filter:blur(30px);pointer-events:none}
+.heart-arena:before{width:120px;height:120px;left:8%;top:15%}
+.heart-arena:after{width:160px;height:160px;right:8%;bottom:5%}
+.moving-heart{
+  position:absolute;width:64px;height:64px;padding:0;border:0;background:none;color:#efb8c2;
+  font-size:54px;line-height:64px;cursor:pointer;z-index:5;
+  filter:drop-shadow(0 0 14px rgba(239,184,194,.35));
+  transition:left .45s ease,top .45s ease,transform .25s ease;
+  animation:heartFloat 1.8s ease-in-out infinite
+}
+.moving-heart:hover{filter:drop-shadow(0 0 25px rgba(239,184,194,.65))}
+.moving-heart.caught{animation:heartCaught .5s ease}
+@keyframes heartFloat{50%{margin-top:-8px;transform:rotate(4deg)}}
+@keyframes heartCaught{0%{transform:scale(1)}45%{transform:scale(1.5) rotate(-8deg)}100%{transform:scale(1)}}
+.heart-hint{position:absolute;left:0;right:0;bottom:20px;color:#71666b;font-size:11px;letter-spacing:.12em;text-transform:uppercase;pointer-events:none}
+.heart-count{font-size:12px;color:#8c7f84;margin-top:8px}
+.heart-game #heartMessage{min-height:48px;margin-top:8px;font-size:30px}
+</style>
+
+<style id="mobile-final-fix">
+@media (max-width: 800px){
+  html, body{
+    width:100% !important;
+    height:100% !important;
+    min-height:100% !important;
+    overflow:hidden !important;
+  }
+
+  .screen{
+    position:fixed !important;
+    inset:0 !important;
+    width:100% !important;
+    height:100svh !important;
+    min-height:100svh !important;
+    max-height:100svh !important;
+    padding:10px 12px !important;
+    overflow:hidden !important;
+  }
+
+  .screen > .inner{
+    width:100% !important;
+    max-width:100% !important;
+    height:auto !important;
+    max-height:calc(100svh - 20px) !important;
+    overflow:hidden !important;
+  }
+
+  /* Chapter I — make the entire gift screen fit in one phone viewport */
+  #gifts .inner{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:center !important;
+  }
+  #gifts h2{
+    font-size:clamp(28px,8.5vw,40px) !important;
+    line-height:.92 !important;
+    margin:5px 0 7px !important;
+  }
+  #gifts p{
+    font-size:10px !important;
+    line-height:1.25 !important;
+  }
+  #gifts .boxes{
+    width:100% !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:7px !important;
+    margin-top:11px !important;
+  }
+  #gifts .box{
+    width:100% !important;
+    height:78px !important;
+    min-height:78px !important;
+    border-radius:11px !important;
+  }
+  #gifts .box:last-child{
+    grid-column:1 / -1 !important;
+  }
+  #gifts .lid{
+    top:34% !important;
+    height:9px !important;
+  }
+  #gifts .body{
+    top:43% !important;
+    bottom:17% !important;
+  }
+  #gifts .ribbon{
+    top:43% !important;
+    bottom:17% !important;
+  }
+  #gifts .box span{
+    bottom:5px !important;
+    font-size:6.5px !important;
+    letter-spacing:.07em !important;
+  }
+  #gifts .counter{
+    margin-top:6px !important;
+    font-size:9px !important;
+  }
+  #gifts #giftNext{
+    margin-top:6px !important;
+    padding:8px 16px !important;
+    font-size:10px !important;
+  }
+
+  /* Quiz */
+  #quiz h2{
+    font-size:clamp(28px,8.5vw,40px) !important;
+  }
+  #quiz .card{
+    width:100% !important;
+    margin-top:10px !important;
+    padding:13px !important;
+  }
+  #quiz .question{
+    font-size:22px !important;
+  }
+  #quiz .answer{
+    padding:9px 10px !important;
+    font-size:10px !important;
+  }
+
+  /* Heart game */
+  #puzzleScreen h2{
+    font-size:clamp(28px,8.5vw,40px) !important;
+  }
+  #puzzleScreen .heart-arena{
+    width:100% !important;
+    height:31svh !important;
+    min-height:180px !important;
+    max-height:250px !important;
+    margin:10px auto 6px !important;
+  }
+
+  /* Letters */
+  #lettersScreen h2{
+    font-size:clamp(28px,8.5vw,40px) !important;
+  }
+  #lettersScreen .letters{
+    width:100% !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:7px !important;
+    margin-top:10px !important;
+  }
+  #lettersScreen .letter{
+    width:100% !important;
+    height:65px !important;
+    font-size:9px !important;
+    padding:7px !important;
+  }
+
+  /* Final */
+  #final .inner{
+    height:100% !important;
+    max-height:100% !important;
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:center !important;
+    align-items:center !important;
+  }
+  #final .final-heart{font-size:28px !important}
+  #final .name{font-size:37px !important}
+  #final .proposal{
+    font-size:clamp(25px,7.5vw,36px) !important;
+    line-height:.9 !important;
+    margin:6px 0 8px !important;
+  }
+  #final p{
+    max-width:360px !important;
+    font-size:8px !important;
+    line-height:1.2 !important;
+    margin:2px auto !important;
+  }
+  #final #yesBtn{
+    margin-top:7px !important;
+    padding:8px 15px !important;
+    font-size:10px !important;
+  }
+
+  /* Modal */
+  #modal{
+    height:100svh !important;
+    max-height:100svh !important;
+    padding:12px !important;
+  }
+  #modal .card{
+    max-height:calc(100svh - 24px) !important;
+    padding:16px 13px !important;
+  }
+  #modal p{font-size:10px !important;line-height:1.35 !important}
+}
+</style>
+
+</head>
+<body>
+
+<button id="musicBtn" class="music hidden" type="button" aria-label="Toggle music">♫</button>
+
+<section id="landing" class="screen active">
+  <div class="glow"></div>
+  <div class="inner">
+    <div class="eyebrow">A little something I made for you</div>
+    <h1>For<br><span class="script">you.</span></h1>
+     <p>Upuuuu</p>
+    <p>There are things I've wanted to say, memories I've wanted to keep, and one question I've been carrying for a while.</p>
+    <button id="startBtn" class="cta" type="button">Start the journey Darloooooo →</button>
+  </div>
+</section>
+
+<section id="gifts" class="screen">
+  <div class="inner">
+    <div class="eyebrow">Chapter I · Little things</div>
+    <h2>A few things I kept for you.</h2>
+    <p>Open all five. Take your time.</p>
+    <div class="boxes">
+      <button class="box" type="button" data-i="0"><i class="lid"></i><i class="body"></i><i class="ribbon"></i><span>01 · A MEMORY</span></button>
+      <button class="box" type="button" data-i="1"><i class="lid"></i><i class="body"></i><i class="ribbon"></i><span>02 · A CONFESSION</span></button>
+      <button class="box" type="button" data-i="2"><i class="lid"></i><i class="body"></i><i class="ribbon"></i><span>03 · A SECRET</span></button>
+      <button class="box" type="button" data-i="3"><i class="lid"></i><i class="body"></i><i class="ribbon"></i><span>04 · A LITTLE US</span></button>
+      <button class="box" type="button" data-i="4"><i class="lid"></i><i class="body"></i><i class="ribbon"></i><span>05 · THE LAST ONE</span></button>
+    </div>
+    <div id="giftCounter" class="counter">0 / 5 opened</div>
+    <button id="giftNext" class="cta next" type="button">Continue →</button>
+  </div>
+</section>
+
+<section id="quiz" class="screen">
+  <div class="inner">
+    <div class="eyebrow">Chapter II · Us</div>
+    <h2>How well do you know us?</h2>
+    <div class="card">
+      <div id="question" class="question"></div>
+      <div id="answers" class="answers"></div>
+      <div id="feedback" class="feedback"></div>
+    </div>
+  </div>
+</section>
+
+<section id="puzzleScreen" class="screen">
+  <div class="inner heart-game">
+    <div class="eyebrow">Chapter III · One last little game</div>
+    <h2>Okay, enough serious stuff.</h2>
+    <p>Catch the heart. ❤️</p>
+    <div id="heartArena" class="heart-arena">
+      <button id="movingHeart" class="moving-heart" type="button" aria-label="Catch the heart">♥</button>
+      <div id="heartHint" class="heart-hint">It's somewhere around here...</div>
+    </div>
+    <div id="heartCount" class="heart-count">0 / 5</div>
+    <div id="heartMessage" class="script"></div>
+  </div>
+</section>
+
+<section id="lettersScreen" class="screen">
+  <div class="inner">
+    <div class="eyebrow">Chapter IV · Things I never said</div>
+    <h2>Open these slowly.</h2>
+    <p>Every envelope contains one thing I wanted you to know.</p>
+    <div class="letters">
+      <button class="letter" type="button" data-i="0">Something I noticed</button>
+      <button class="letter" type="button" data-i="1">Something I realized</button>
+      <button class="letter" type="button" data-i="2">Something I'm afraid of</button>
+      <button class="letter" type="button" data-i="3">Something I hope for</button>
+    </div>
+    <div id="letterCounter" class="counter">0 / 4 opened</div>
+    <button id="lettersNext" class="cta next" type="button">One last thing →</button>
+  </div>
+</section>
+
+<section id="final" class="screen">
+  <div class="inner">
+    <div class="final-heart">♡</div>
+    <div class="eyebrow">The last chapter</div>
+    <div class="name">For you</div>
+    <div class="proposal">I've been trying to say this<br>without saying it.</div>
+    <p>Maybe all these little things were just my very long way of getting here.</p>
+    <p>Upuuu... If you ever feel like coming back to me in next few days, and feeling like how you'll start, because I will be completely unaware about it obviously.</p>
+    <p>I just have two requests to you. One is I never get any proposal from anyone, may I get one? heheeeeeee... Don't be angry babu...</p>
+    <p>There is another request... Do either of these two or whatever you want. The second request is to wear the bracelet as a sign of your desire to stay with me forever.(actually while buying it I thought you to say that)</p>
+    <p>And ask me to send two videos just after you finish reading it, post those videos on your stories when you feel like coming back to me babuuu...</p>
+    <p>And yes, here you won't find any reject button; if you want to reject, you need to say it loud too. Not only the acceptance I want to hear from you.</p>
+    <p>Love you my dearest Puchupuchuuu❤️</p>
+    <button id="yesBtn" class="cta" type="button">Yes, I'm ready ❤️</button>
+  </div>
+</section>
+
+<div id="modal" class="screen" style="z-index:150;background:#08070be8">
+  <div class="card">
+    <div class="eyebrow" id="modalVisual"></div>
+    <h2 id="modalTitle"></h2>
+    <p id="modalText"></p>
+    <button id="modalClose" class="cta" type="button">Keep it with you</button>
+  </div>
+</div>
+
+<div id="celebrate"><div><div class="script">Then it's a yes.</div><h2>Come here. ❤️</h2><p>And yes, I probably rehearsed this a hundred times.</p></div></div>
+
+<audio id="music" loop preload="auto"><source src="YTDown.com_YouTube_Tum-Prem-Ho-Reprise-Lyrical-Video-RadhaK_Media_Feoea8FQTI0_009_128k.mp3" type="audio/mp3"></audio>
+
+<script>
+(function(){
+"use strict";
+
+const screens = ["landing","gifts","quiz","puzzleScreen","lettersScreen","final"];
+let current = 0;
+const $ = id => document.getElementById(id);
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  const target = $(id);
+  if(target) target.classList.add("active");
+}
+function next(id){
+  const index = screens.indexOf(id);
+  if(index !== -1 && index === current + 1){
+    current = index;
+    showScreen(id);
+  }
+}
+
+/* Start button: direct, explicit event listener. */
+$("startBtn").addEventListener("click", function(){
+  const music = $("music");
+  music.play().then(function(){
+    $("musicBtn").textContent = "♫";
+  }).catch(function(){});
+  $("musicBtn").classList.remove("hidden");
+  current = 1;
+  showScreen("gifts");
+});
+
+/* Music */
+$("musicBtn").addEventListener("click", function(){
+  const music = $("music");
+  if(music.paused){
+    music.play().catch(()=>{});
+    this.textContent = "♫";
+  }else{
+    music.pause();
+    this.textContent = "♪";
+  }
+});
+
+/* Modal */
+function modal(title,text,visual){
+  $("modalTitle").textContent = title;
+  $("modalText").textContent = text;
+  $("modalVisual").textContent = visual;
+  $("modal").classList.add("active");
+}
+$("modalClose").addEventListener("click",()=> $("modal").classList.remove("active"));
+
+/* Gifts */
+const giftData = [
+ ["A memory","Some moments look ordinary while they're happening. Then somehow they become the ones you remember when everything is quiet.","01 · A MEMORY"],
+ ["A confession","At some point, talking to you stopped being something I enjoyed and became something I looked forward to. I realized that you're the only person who can take care of me, who can make me happy always, with whom I feel safe, warmth.","02 · A CONFESSION"],
+ ["A secret","I've replayed certain conversations with you in my head more times than I would ever admit.","03 · A SECRET"],
+ ["A little us","It's not one perfect moment. It's the collection of tiny moments that somehow got me here. It's a collection of our cutu hottu fights and then our deep friendship. I know we both see a strong light of faith in each other's eyes.","04 · A LITTLE US"],
+ ["The last one","You found it. Keep it for a second. There is still one thing left in this journey.","05 · THE LAST ONE"]
+];
+const openedGifts = new Set();
+document.querySelectorAll(".box").forEach(box=>{
+  box.addEventListener("click",()=>{
+    const i = Number(box.dataset.i);
+    if(!openedGifts.has(i)){
+      openedGifts.add(i);
+      box.classList.add("lid-open");
+      $("giftCounter").textContent = openedGifts.size+" / 5 opened";
+    }
+    modal(giftData[i][0],giftData[i][1],giftData[i][2]);
+    if(openedGifts.size===5) $("giftNext").classList.add("ready");
+  });
+});
+$("giftNext").addEventListener("click",()=>{
+  if(openedGifts.size===5) next("quiz");
+});
+
+/* Quiz */
+const questions=[
+ {q:"What did I secretly start doing because of you?",a:["Checking the time","Smiling at my phone","Learning to cook","Running"],c:1},
+ {q:"What is the most dangerous thing about you?",a:["Your smile","Your stubbornness","The way you make me forget what I was saying","All of the above"],c:3},
+ {q:"If our story were a movie, what would I call it?",a:["Bad Decisions","Somewhere Between Then & Now","Mission Impossible","The Last Lecture"],c:1}
+];
+let qi=0;
+function renderQuestion(){
+ const q=questions[qi];
+ $("question").textContent=q.q;
+ $("answers").innerHTML="";
+ $("feedback").textContent="";
+ q.a.forEach((answer,i)=>{
+   const b=document.createElement("button");
+   b.className="answer"; b.type="button"; b.textContent=answer;
+   b.addEventListener("click",()=>{
+     if(i===q.c){
+       b.classList.add("correct");
+       $("feedback").textContent="Okay. You know me. ❤️";
+       qi++;
+       if(qi<questions.length) setTimeout(renderQuestion,650);
+       else setTimeout(()=>next("puzzleScreen"),900);
+     }else{
+       b.classList.add("wrong");
+       $("feedback").textContent="I will pretend I didn't see that. Try again.";
+     }
+   });
+   $("answers").appendChild(b);
+ });
+}
+renderQuestion();
+
+/* Heart-catching game */
+const heartArena = $("heartArena");
+const movingHeart = $("movingHeart");
+const heartCount = $("heartCount");
+const heartHint = $("heartHint");
+const heartMessage = $("heartMessage");
+
+let heartsCaught = 0;
+let heartReady = true;
+
+const heartMessages = [
+  "Too easy.",
+  "You're getting suspiciously good at this.",
+  "Okay... I knew you'd find it.",
+  "You're making this difficult for me.",
+  "One last one."
+];
+
+function placeHeart(){
+  const rect = heartArena.getBoundingClientRect();
+  const size = 64;
+  const padding = 20;
+  const x = padding + Math.random() * Math.max(10, rect.width - size - padding * 2);
+  const y = padding + Math.random() * Math.max(10, rect.height - size - padding * 2);
+  movingHeart.style.left = x + "px";
+  movingHeart.style.top = y + "px";
+}
+
+function startHeartRound(){
+  heartReady = true;
+  heartHint.textContent = heartsCaught < 4 ? "Catch it. ❤️" : "One last one...";
+  placeHeart();
+}
+
+movingHeart.addEventListener("click", function(){
+  if(!heartReady) return;
+
+  heartsCaught++;
+  heartCount.textContent = heartsCaught + " / 5";
+  heartMessage.textContent = heartMessages[heartsCaught - 1];
+
+  movingHeart.classList.remove("caught");
+  void movingHeart.offsetWidth;
+  movingHeart.classList.add("caught");
+
+  if(heartsCaught < 5){
+    heartReady = false;
+    setTimeout(startHeartRound, 650);
+  }else{
+    heartReady = false;
+    movingHeart.style.left = "50%";
+    movingHeart.style.top = "50%";
+    movingHeart.style.transform = "translate(-50%,-50%) scale(1.15)";
+    heartHint.textContent = "";
+    heartMessage.textContent = "You caught it.";
+
+    setTimeout(()=>{
+      modal(
+        "Unfortunately...",
+        "It was already yours. You caught my heart a long time ago. I just needed an excuse to tell you.",
+        "♡"
+      );
+    }, 900);
+
+    setTimeout(()=>next("lettersScreen"), 3600);
+  }
+});
+
+window.addEventListener("resize", ()=>{
+  if($("puzzleScreen").classList.contains("active") && heartsCaught < 5) placeHeart();
+});
+/* Letters */
+const letterData=[
+ ["Something I noticed","You make ordinary days feel less ordinary. I don't know exactly when that happened. I just know I noticed."],
+ ["Something I realized","Somewhere along the way, you became one of those few people I wanted to tell things to. Good things. Bad things. Stupid things. Everything. And now, you're the only one"],
+ ["Something I'm afraid of","Sometimes the most important things stay unsaid because saying them makes them real. So I'm saying this one anyway."],
+ ["Something I hope for","More ridiculous conversations. More photographs. More ordinary days that somehow become memories. More of us."]
+];
+const openedLetters=new Set();
+document.querySelectorAll(".letter").forEach(el=>{
+ el.addEventListener("click",()=>{
+   const i=Number(el.dataset.i);
+   if(!openedLetters.has(i)){
+     openedLetters.add(i); el.classList.add("opened");
+     $("letterCounter").textContent=openedLetters.size+" / 4 opened";
+   }
+   modal(letterData[i][0],letterData[i][1],"read this one twice");
+   if(openedLetters.size===4) $("lettersNext").classList.add("ready");
+ });
+});
+$("lettersNext").addEventListener("click",()=>{
+ if(openedLetters.size===4) next("final");
+});
+
+/* Proposal */
+$("yesBtn").addEventListener("click",()=>{
+ $("celebrate").classList.add("show");
+ for(let i=0;i<90;i++){
+   const e=document.createElement("span");
+   e.style.cssText="position:fixed;left:"+Math.random()*100+"vw;top:-20px;width:7px;height:14px;background:hsl("+(330+Math.random()*35)+",50%,"+(55+Math.random()*20)+"%);transform:rotate("+Math.random()*360+"deg);animation:fall 3s "+Math.random()*1.5+"s linear forwards;z-index:250";
+   $("celebrate").appendChild(e);
+ }
+});
+const style=document.createElement("style");
+style.textContent="@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}";
+document.head.appendChild(style);
+
+/* Safety: keep the experience fixed even if wheel/touch tries to scroll. */
+window.addEventListener("wheel",e=>e.preventDefault(),{passive:false});
+window.addEventListener("touchmove",e=>e.preventDefault(),{passive:false});
+window.addEventListener("keydown",e=>{
+ if(["ArrowDown","ArrowUp","PageDown","PageUp"," ","Home","End"].includes(e.key)) e.preventDefault();
+});
+
+showScreen("landing");
+})();
+</script>
+</body>
+</html>
