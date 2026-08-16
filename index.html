@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>A Little Journey</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:wght@400;500&family=Parisienne&display=swap');
@@ -23,7 +23,7 @@ p{color:#b9afb2;line-height:1.7;max-width:650px;margin:0 auto}
 .cta:hover{background:#d99aa7;color:#24151b;transform:translateY(-2px)}
 .glow{position:absolute;width:55vw;height:55vw;border-radius:50%;background:#b66b7d;filter:blur(90px);opacity:.14;animation:pulse 6s infinite}
 @keyframes pulse{50%{transform:scale(1.18);opacity:.22}}
-.music{position:fixed;right:22px;top:20px;z-index:100;border:1px solid #493840;background:#171219;color:#ddd;border-radius:50%;width:44px;height:44px;cursor:pointer}
+.music{position:fixed;right:calc(22px + env(safe-area-inset-right));top:calc(20px + env(safe-area-inset-top));z-index:100;border:1px solid #493840;background:#171219;color:#ddd;border-radius:50%;width:44px;height:44px;cursor:pointer}
 .music.hidden{display:none}
 .boxes{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:35px}
 .box{height:190px;border:1px solid #4b3740;background:#171118;border-radius:18px;position:relative;cursor:pointer;overflow:hidden;transition:.3s}
@@ -56,7 +56,245 @@ p{color:#b9afb2;line-height:1.7;max-width:650px;margin:0 auto}
 .name{font:60px Parisienne;color:#efc5cc}
 #celebrate{position:fixed;inset:0;background:#0c0a0ff5;z-index:200;display:none;align-items:center;justify-content:center;text-align:center}
 #celebrate.show{display:flex}
-@media(max-width:800px){.boxes{grid-template-columns:repeat(2,1fr)}.box:last-child{grid-column:span 2}.box{height:145px}.card{padding:25px}}
+
+/* ---------- MOBILE / SMALL SCREEN LAYOUT ---------- */
+@media (max-width: 800px){
+  html,body{width:100%;height:100%;height:100dvh;overflow:hidden}
+  .screen{
+    width:100%;
+    height:100dvh;
+    min-height:0;
+    padding:16px 14px;
+    overflow:hidden;
+  }
+  .inner{
+    width:100%;
+    max-width:100%;
+    max-height:calc(100dvh - 32px);
+    min-height:0;
+    overflow:hidden;
+  }
+
+  .eyebrow{
+    font-size:8px;
+    letter-spacing:.20em;
+    line-height:1.3;
+  }
+  h1{
+    font-size:clamp(58px,19vw,92px);
+    line-height:.78;
+    margin:12px 0 16px;
+  }
+  h2{
+    font-size:clamp(31px,9vw,48px);
+    line-height:.9;
+    margin:8px 0 10px;
+  }
+  .script{font-size:1em}
+  p{
+    font-size:11px;
+    line-height:1.45;
+    max-width:100%;
+  }
+
+  .cta{
+    max-width:100%;
+    margin-top:16px;
+    padding:11px 18px;
+    font-size:12px;
+    white-space:normal;
+    line-height:1.2;
+  }
+  .music{
+    right:12px;
+    top:10px;
+    width:38px;
+    height:38px;
+    font-size:16px;
+  }
+
+  /* Gifts */
+  .boxes{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+    margin-top:14px;
+  }
+  .box{
+    width:100%;
+    height:92px;
+    min-width:0;
+    border-radius:12px;
+  }
+  .box:last-child{grid-column:1 / -1}
+  .lid{top:34%;height:11px}
+  .body{top:43%;bottom:17%}
+  .ribbon{top:43%;bottom:17%}
+  .box span{
+    bottom:6px;
+    font-size:7px;
+    letter-spacing:.08em;
+    white-space:nowrap;
+  }
+  .counter{
+    font-size:9px;
+    margin-top:8px;
+  }
+  .next{margin-top:9px}
+
+  /* Quiz */
+  .card{
+    width:100%;
+    max-width:100%;
+    margin:14px auto 0;
+    padding:15px;
+    border-radius:16px;
+  }
+  .question{
+    font-size:24px;
+    line-height:1.05;
+    margin-bottom:13px;
+  }
+  .answers{gap:7px}
+  .answer{
+    border-radius:10px;
+    padding:10px 11px;
+    font-size:11px;
+    line-height:1.2;
+  }
+  .feedback{
+    height:20px;
+    margin-top:8px;
+    font-size:9px;
+  }
+
+  /* Heart game */
+  .heart-arena{
+    width:100%;
+    height:34dvh;
+    min-height:210px;
+    max-height:290px;
+    margin:14px auto 8px;
+    border-radius:20px;
+  }
+  .moving-heart{
+    width:50px;
+    height:50px;
+    font-size:42px;
+    line-height:50px;
+  }
+  .heart-hint{
+    bottom:10px;
+    font-size:8px;
+  }
+  .heart-count{
+    font-size:9px;
+    margin-top:5px;
+  }
+  .heart-game #heartMessage{
+    min-height:32px;
+    margin-top:4px;
+    font-size:22px;
+    line-height:1;
+  }
+
+  /* Letters */
+  .letters{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+    margin-top:14px;
+  }
+  .letter{
+    width:100%;
+    height:72px;
+    min-width:0;
+    padding:8px;
+    border-radius:10px;
+    font-size:10px;
+    line-height:1.15;
+  }
+
+  /* Final proposal: deliberately compact so it remains one fixed screen */
+  #final .inner{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    height:100%;
+    max-height:100%;
+  }
+  .final-heart{font-size:32px;line-height:1}
+  .name{
+    font-size:39px;
+    line-height:1;
+    margin:3px 0;
+  }
+  .proposal{
+    font-size:clamp(27px,7.8vw,38px);
+    line-height:.9;
+    margin:8px 0 10px;
+  }
+  #final p{
+    width:100%;
+    max-width:360px;
+    font-size:8.5px;
+    line-height:1.28;
+    margin:2px auto;
+  }
+  #final .cta{
+    margin-top:8px;
+    padding:9px 16px;
+    font-size:11px;
+  }
+
+  /* Modal */
+  #modal{
+    padding:14px;
+  }
+  #modal .card{
+    max-height:calc(100dvh - 28px);
+    overflow:hidden;
+    padding:18px 15px;
+    margin:0;
+  }
+  #modal h2{
+    font-size:31px;
+    margin:8px 0;
+  }
+  #modal p{
+    font-size:11px;
+    line-height:1.45;
+  }
+  #modal .cta{
+    margin-top:13px;
+  }
+
+  #celebrate{
+    padding:20px;
+  }
+  #celebrate h2{
+    font-size:40px;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 380px), (max-height: 650px){
+  .screen{padding:11px 10px}
+  .inner{max-height:calc(100dvh - 22px)}
+  h2{font-size:29px}
+  .boxes{gap:6px;margin-top:10px}
+  .box{height:78px}
+  .box span{font-size:6px}
+  .card{margin-top:10px;padding:12px}
+  .question{font-size:21px}
+  .answer{padding:8px 9px;font-size:10px}
+  .heart-arena{height:31dvh;min-height:185px}
+  .letters{margin-top:10px}
+  .letter{height:62px;font-size:9px}
+  #final p{font-size:7.5px;line-height:1.22}
+  .proposal{font-size:26px}
+}
+
 
 .heart-game .inner{position:relative}
 .heart-arena{
