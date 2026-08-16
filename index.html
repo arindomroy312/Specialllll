@@ -321,6 +321,181 @@ p{color:#b9afb2;line-height:1.7;max-width:650px;margin:0 auto}
 .heart-count{font-size:12px;color:#8c7f84;margin-top:8px}
 .heart-game #heartMessage{min-height:48px;margin-top:8px;font-size:30px}
 </style>
+
+<style id="mobile-final-fix">
+@media (max-width: 800px){
+  html, body{
+    width:100% !important;
+    height:100% !important;
+    min-height:100% !important;
+    overflow:hidden !important;
+  }
+
+  .screen{
+    position:fixed !important;
+    inset:0 !important;
+    width:100% !important;
+    height:100svh !important;
+    min-height:100svh !important;
+    max-height:100svh !important;
+    padding:10px 12px !important;
+    overflow:hidden !important;
+  }
+
+  .screen > .inner{
+    width:100% !important;
+    max-width:100% !important;
+    height:auto !important;
+    max-height:calc(100svh - 20px) !important;
+    overflow:hidden !important;
+  }
+
+  /* Chapter I — make the entire gift screen fit in one phone viewport */
+  #gifts .inner{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:center !important;
+  }
+  #gifts h2{
+    font-size:clamp(28px,8.5vw,40px) !important;
+    line-height:.92 !important;
+    margin:5px 0 7px !important;
+  }
+  #gifts p{
+    font-size:10px !important;
+    line-height:1.25 !important;
+  }
+  #gifts .boxes{
+    width:100% !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:7px !important;
+    margin-top:11px !important;
+  }
+  #gifts .box{
+    width:100% !important;
+    height:78px !important;
+    min-height:78px !important;
+    border-radius:11px !important;
+  }
+  #gifts .box:last-child{
+    grid-column:1 / -1 !important;
+  }
+  #gifts .lid{
+    top:34% !important;
+    height:9px !important;
+  }
+  #gifts .body{
+    top:43% !important;
+    bottom:17% !important;
+  }
+  #gifts .ribbon{
+    top:43% !important;
+    bottom:17% !important;
+  }
+  #gifts .box span{
+    bottom:5px !important;
+    font-size:6.5px !important;
+    letter-spacing:.07em !important;
+  }
+  #gifts .counter{
+    margin-top:6px !important;
+    font-size:9px !important;
+  }
+  #gifts #giftNext{
+    margin-top:6px !important;
+    padding:8px 16px !important;
+    font-size:10px !important;
+  }
+
+  /* Quiz */
+  #quiz h2{
+    font-size:clamp(28px,8.5vw,40px) !important;
+  }
+  #quiz .card{
+    width:100% !important;
+    margin-top:10px !important;
+    padding:13px !important;
+  }
+  #quiz .question{
+    font-size:22px !important;
+  }
+  #quiz .answer{
+    padding:9px 10px !important;
+    font-size:10px !important;
+  }
+
+  /* Heart game */
+  #puzzleScreen h2{
+    font-size:clamp(28px,8.5vw,40px) !important;
+  }
+  #puzzleScreen .heart-arena{
+    width:100% !important;
+    height:31svh !important;
+    min-height:180px !important;
+    max-height:250px !important;
+    margin:10px auto 6px !important;
+  }
+
+  /* Letters */
+  #lettersScreen h2{
+    font-size:clamp(28px,8.5vw,40px) !important;
+  }
+  #lettersScreen .letters{
+    width:100% !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:7px !important;
+    margin-top:10px !important;
+  }
+  #lettersScreen .letter{
+    width:100% !important;
+    height:65px !important;
+    font-size:9px !important;
+    padding:7px !important;
+  }
+
+  /* Final */
+  #final .inner{
+    height:100% !important;
+    max-height:100% !important;
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:center !important;
+    align-items:center !important;
+  }
+  #final .final-heart{font-size:28px !important}
+  #final .name{font-size:37px !important}
+  #final .proposal{
+    font-size:clamp(25px,7.5vw,36px) !important;
+    line-height:.9 !important;
+    margin:6px 0 8px !important;
+  }
+  #final p{
+    max-width:360px !important;
+    font-size:8px !important;
+    line-height:1.2 !important;
+    margin:2px auto !important;
+  }
+  #final #yesBtn{
+    margin-top:7px !important;
+    padding:8px 15px !important;
+    font-size:10px !important;
+  }
+
+  /* Modal */
+  #modal{
+    height:100svh !important;
+    max-height:100svh !important;
+    padding:12px !important;
+  }
+  #modal .card{
+    max-height:calc(100svh - 24px) !important;
+    padding:16px 13px !important;
+  }
+  #modal p{font-size:10px !important;line-height:1.35 !important}
+}
+</style>
+
 </head>
 <body>
 
